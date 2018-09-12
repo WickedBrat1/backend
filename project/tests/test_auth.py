@@ -12,7 +12,7 @@ from project.tests.base import BaseTestCase
 
 def register_user(self, email, password):
     return self.client.post(
-        '/auth/register',
+        '/api/auth/register',
         data=json.dumps(dict(
             email=email,
             password=password
@@ -22,7 +22,7 @@ def register_user(self, email, password):
 
 def login_user(self, email, password):
     return self.client.post(
-        '/auth/login',
+        '/api/auth/login',
         data=json.dumps(dict(
             email=email,
             password=password
@@ -98,7 +98,7 @@ class TestAuthBlueprint(BaseTestCase):
         with self.client:
             resp_register = register_user(self, 'joe@gmail.com', '123456')
             response = self.client.get(
-                '/auth/status',
+                '/api/auth/status',
                 headers=dict(
                     Authorization='Bearer ' + json.loads(
                         resp_register.data.decode()
@@ -117,7 +117,7 @@ class TestAuthBlueprint(BaseTestCase):
         with self.client:
             resp_register = register_user(self, 'joe@gmail.com', '123456')
             response = self.client.get(
-                '/auth/status',
+                '/api/auth/status',
                 headers=dict(
                     Authorization='Bearer' + json.loads(
                         resp_register.data.decode()
@@ -151,7 +151,7 @@ class TestAuthBlueprint(BaseTestCase):
             self.assertEqual(resp_login.status_code, 200)
             # valid token logout
             response = self.client.post(
-                '/auth/logout',
+                '/api/auth/logout',
                 headers=dict(
                     Authorization='Bearer ' + json.loads(
                         resp_login.data.decode()
@@ -186,7 +186,7 @@ class TestAuthBlueprint(BaseTestCase):
             # invalid token logout
             time.sleep(6)
             response = self.client.post(
-                '/auth/logout',
+                '/api/auth/logout',
                 headers=dict(
                     Authorization='Bearer ' + json.loads(
                         resp_login.data.decode()
@@ -226,7 +226,7 @@ class TestAuthBlueprint(BaseTestCase):
             db.session.commit()
             # blacklisted valid token logout
             response = self.client.post(
-                '/auth/logout',
+                '/api/auth/logout',
                 headers=dict(
                     Authorization='Bearer ' + json.loads(
                         resp_login.data.decode()
@@ -248,7 +248,7 @@ class TestAuthBlueprint(BaseTestCase):
             db.session.add(blacklist_token)
             db.session.commit()
             response = self.client.get(
-                '/auth/status',
+                '/api/auth/status',
                 headers=dict(
                     Authorization='Bearer ' + json.loads(
                         resp_register.data.decode()
